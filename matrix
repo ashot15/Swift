@@ -54,37 +54,52 @@ class Matrix {
     }
 }
 
-// Функция для ввода матрицы
-func inputMatrix() -> Matrix? {
-    print("Введите количество строк:")
-    guard let rows = Int(readLine() ?? ""), rows > 0 else {
-        print("Некорректное количество строк.")
-        return nil
+// Функция для ввода матрицы с проверкой ввода
+func inputMatrix() -> Matrix {
+    var rows = 0
+    var columns = 0
+
+    // Ввод количества строк
+    while true {
+        print("Введите количество строк:")
+        if let input = readLine(), let r = Int(input), r > 0 {
+            rows = r
+            break
+        } else {
+            print("Некорректное количество строк. Попробуйте еще раз.")
+        }
     }
 
-    print("Введите количество столбцов:")
-    guard let columns = Int(readLine() ?? ""), columns > 0 else {
-        print("Некорректное количество столбцов.")
-        return nil
+    // Ввод количества столбцов
+    while true {
+        print("Введите количество столбцов:")
+        if let input = readLine(), let c = Int(input), c > 0 {
+            columns = c
+            break
+        } else {
+            print("Некорректное количество столбцов. Попробуйте еще раз.")
+        }
     }
 
     var values = [[Double]]()
 
+    // Ввод строк матрицы
     for i in 0..<rows {
-        print("Введите элементы строки \(i + 1), разделенные пробелами:")
-        guard let line = readLine() else {
-            print("Ошибка ввода.")
-            return nil
+        while true {
+            print("Введите элементы строки \(i + 1), разделенные пробелами:")
+            if let line = readLine() {
+                let row = line.split(separator: " ").compactMap { Double($0) }
+                
+                if row.count == columns {
+                    values.append(row)
+                    break
+                } else {
+                    print("Некорректное количество элементов в строке. Попробуйте еще раз.")
+                }
+            } else {
+                print("Ошибка ввода. Попробуйте еще раз.")
+            }
         }
-        
-        let row = line.split(separator: " ").compactMap { Double($0) }
-        
-        if row.count != columns {
-            print("Некорректное количество элементов в строке.")
-            return nil
-        }
-
-        values.append(row)
     }
 
     return Matrix(values: values)
@@ -92,10 +107,10 @@ func inputMatrix() -> Matrix? {
 
 // Пример использования
 print("Введите первую матрицу:")
-guard let matrixA = inputMatrix() else { exit(1) }
+let matrixA = inputMatrix()
 
 print("Введите вторую матрицу:")
-guard let matrixB = inputMatrix() else { exit(1) }
+let matrixB = inputMatrix()
 
 if let sum = matrixA.add(matrixB) {
     print("Сумма матриц:")
