@@ -1,0 +1,108 @@
+import Foundation
+
+class Matrix {
+    var values: [[Double]]
+
+    init(values: [[Double]]) {
+        self.values = values
+    }
+
+    // Сложение матриц
+    func add(_ other: Matrix) -> Matrix? {
+        guard self.values.count == other.values.count,
+              self.values[0].count == other.values[0].count else {
+            print("Размеры матриц не совпадают для сложения.")
+            return nil
+        }
+
+        var result = [[Double]](repeating: [Double](repeating: 0.0, count: self.values[0].count), count: self.values.count)
+
+        for i in 0..<self.values.count {
+            for j in 0..<self.values[i].count {
+                result[i][j] = self.values[i][j] + other.values[i][j]
+            }
+        }
+
+        return Matrix(values: result)
+    }
+
+    // Умножение матриц
+    func multiply(_ other: Matrix) -> Matrix? {
+        guard self.values[0].count == other.values.count else {
+            print("Количество столбцов первой матрицы должно совпадать с количеством строк второй матрицы.")
+            return nil
+        }
+
+        var result = [[Double]](repeating: [Double](repeating: 0.0, count: other.values[0].count), count: self.values.count)
+
+        for i in 0..<self.values.count {
+            for j in 0..<other.values[0].count {
+                for k in 0..<self.values[0].count {
+                    result[i][j] += self.values[i][k] * other.values[k][j]
+                }
+            }
+        }
+
+        return Matrix(values: result)
+    }
+
+    // Печать матрицы
+    func printMatrix() {
+        for row in values {
+            print(row.map { String(format: "%.2f", $0) }.joined(separator: "\t"))
+        }
+    }
+}
+
+// Функция для ввода матрицы
+func inputMatrix() -> Matrix? {
+    print("Введите количество строк:")
+    guard let rows = Int(readLine() ?? ""), rows > 0 else {
+        print("Некорректное количество строк.")
+        return nil
+    }
+
+    print("Введите количество столбцов:")
+    guard let columns = Int(readLine() ?? ""), columns > 0 else {
+        print("Некорректное количество столбцов.")
+        return nil
+    }
+
+    var values = [[Double]]()
+
+    for i in 0..<rows {
+        print("Введите элементы строки \(i + 1), разделенные пробелами:")
+        guard let line = readLine() else {
+            print("Ошибка ввода.")
+            return nil
+        }
+        
+        let row = line.split(separator: " ").compactMap { Double($0) }
+        
+        if row.count != columns {
+            print("Некорректное количество элементов в строке.")
+            return nil
+        }
+
+        values.append(row)
+    }
+
+    return Matrix(values: values)
+}
+
+// Пример использования
+print("Введите первую матрицу:")
+guard let matrixA = inputMatrix() else { exit(1) }
+
+print("Введите вторую матрицу:")
+guard let matrixB = inputMatrix() else { exit(1) }
+
+if let sum = matrixA.add(matrixB) {
+    print("Сумма матриц:")
+    sum.printMatrix()
+}
+
+if let product = matrixA.multiply(matrixB) {
+    print("Произведение матриц:")
+    product.printMatrix()
+}
